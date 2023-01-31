@@ -1,6 +1,6 @@
 ﻿namespace TimeSync.Data;
 
-public class TimeLogEntry
+public sealed class TimeLogEntry
 {
     public DateOnly Date { get; set; }
     public TimeOnly Start { get; set; }

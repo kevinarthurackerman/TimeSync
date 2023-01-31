@@ -18,16 +18,16 @@ public class CsvTimeLog
         csv.ReadHeader();
 
         if (csv.HeaderRecord == null
-            || csv.HeaderRecord.Length != 5
-            || csv.HeaderRecord[0] != "Date"
-            || csv.HeaderRecord[1] != "Start"
-            || csv.HeaderRecord[2] != "End"
-            || csv.HeaderRecord[3] != "Service"
-            || csv.HeaderRecord[4] != "Description")
+            || !csv.HeaderRecord.Any(x => x == "Date")
+            || !csv.HeaderRecord.Any(x => x == "Start")
+            || !csv.HeaderRecord.Any(x => x == "End")
+            || !csv.HeaderRecord.Any(x => x == "Service")
+            || !csv.HeaderRecord.Any(x => x == "Description"))
             throw new InvalidOperationException("Unexpected header row. Expected: Date, Start, End, Service, Description");
 
         var records = csv.GetRecords<CsvTimeLogEntry>()
             .Where(x => x.Date >= from && x.Date <= to)
+            .Where(x => x.Client == null || x.Client == "CieloWorks")
             .Select(x => new TimeLogEntry
             {
                 Date = x.Date,
@@ -44,9 +44,10 @@ public class CsvTimeLog
 
     private sealed class CsvTimeLogEntry
     {
-        public DateOnly Date { get; set; }
-        public TimeOnly Start { get; set; }
-        public TimeOnly End { get; set; }
+        public DateOnly Date { get; set; } = default;
+        public TimeOnly Start { get; set; } = default;
+        public TimeOnly End { get; set; } = default;
+        public string Client { get; set; } = null;
         public string Service { get; set; } = null!;
         public string Description { get; set; } = null!;
     }
